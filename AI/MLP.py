@@ -54,7 +54,8 @@ for epoch in range(num_epoch):
         target = LabelData[i]
 
         y = np.dot(x, w) + b
-        z = step(y)
+        #z = step(y)
+        z = sigmoid(y)
         e = target - z
 
         delta_w = learning_rate * e * np.transpose([x])
