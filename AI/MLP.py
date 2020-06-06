@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 # MLP Making
 # sigmoid function -> Complete
@@ -15,11 +16,10 @@ def step(y):
 
 # Sigmoid function
 def sigmoid(y):
-    if y < 1:
-        return 0
-    else:
-        return y
+    return (1/(1 + np.exp(-x)))
 
+def LMS(y):
+    E = (y - )
 n = 1000
 Data1 = np.random.randn(n, 2)
 Data2 = np.random.randn(n, 2) + 5
@@ -54,7 +54,6 @@ for epoch in range(num_epoch):
         target = LabelData[i]
 
         y = np.dot(x, w) + b
-        #z = step(y)
         z = sigmoid(y)
         e = target - z
 
