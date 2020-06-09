@@ -39,6 +39,7 @@ def predict(network, x):
 
 x, t = get_data()
 network = init_network()
+W1, W2, W3 = network['W1'], network['W2'], network['W3']
 
 accuracy_cnt = 0
 for i in range(len(x)):
@@ -48,3 +49,9 @@ for i in range(len(x)):
         accuracy_cnt += 1
 
 print("Accuracy:" + str(float(accuracy_cnt) / len(x)))
+
+print(x.shape)
+print(x[0].shape)
+print(W1.shape)
+print(W2.shape)
+print(W3.shape)
