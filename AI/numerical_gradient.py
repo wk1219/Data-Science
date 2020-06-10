@@ -3,7 +3,7 @@ import numpy as np
 def function_2(x):
     return x[0]**2 + x[1]**2
 
-def numeriacal_gradient(f, x):
+def numerical_gradient(f, x):
     h = 1e-4
     grad = np.zeros_like(x)
 
