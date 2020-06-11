@@ -17,7 +17,7 @@ def numerical_gradient(f, x):
         fxh2 = f(x)  # f(x-h)
         grad[idx] = (fxh1 - fxh2) / (2 * h)
 
-        x[idx] = tmp_val  # 값 복원
+        x[idx] = tmp_val
         it.iternext()
 
     return grad
@@ -31,6 +31,9 @@ def softmax(x):
 
     x = x - np.max(x)
     return np.exp(x) / np.sum(np.exp(x))
+
+def mean_squared_error(y, t):
+    return 0.5 * np.sum((y - t)**2)
 
 def cross_entropy_error(y, t):
     delta = 1e-7
@@ -79,14 +82,14 @@ class SoftmaxWithLoss:
     def forward(self, x, t):
         self.t = t
         self.y = softmax(x)
-        self.loss = cross_entropy_error(self.y, self.t)
+        # self.loss = cross_entropy_error(self.y, self.t)
+        self.loss = mean_squared_error(self.y, self.t)
         return self.loss
 
     def backward(self, dout=1):
         batch_size = self.t.shape[0]
         dx = (self.y - self.t) / batch_size
         return dx
-
 
 class ThreeLayerNet:
 
@@ -190,7 +193,7 @@ for i in range(iters_num):
         test_acc = network.accuracy(x_test, t_test)
         train_acc_list.append(train_acc)
         test_acc_list.append(test_acc)
-        print("[%d] Accuracy Train : %s, Test : %s " % (i, str(train_acc), str(test_acc)))
+        print("[%d] Accuracy Train : %.4f, Test : %.4f " % (i, train_acc, test_acc))
 
     # print("[%d/%d] Train : %.4f Test : %.4f" % (i, iters_num, train_acc, test_acc))
 
