@@ -88,7 +88,7 @@ class SoftmaxWithLoss:
         return dx
 
 
-class TwoLayerNet:
+class ThreeLayerNet:
 
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size, weight_init_std=0.01):
         self.params = {}
@@ -158,7 +158,7 @@ class TwoLayerNet:
         return grads
 
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
-network = TwoLayerNet(input_size=784, hidden1_size=50, hidden2_size=100, output_size=10)
+network = ThreeLayerNet(input_size=784, hidden1_size=50, hidden2_size=100, output_size=10)
 
 # Hyper Parameter
 iters_num = 10000
@@ -171,7 +171,6 @@ train_acc_list = []
 test_acc_list = []
 
 iter_per_epoch = max(train_size/batch_size, 1)
-
 
 for i in range(iters_num):
     batch_mask = np.random.choice(train_size, batch_size)
