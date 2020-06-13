@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from collections import OrderedDict
 from dataset.mnist import load_mnist
 
@@ -172,6 +173,7 @@ learning_rate = 0.1
 train_loss_list = []
 train_acc_list = []
 test_acc_list = []
+iter_list = []
 
 iter_per_epoch = max(train_size/batch_size, 1)
 
@@ -187,14 +189,18 @@ for i in range(iters_num):
 
     loss = network.loss(x_batch, t_batch)
     train_loss_list.append(loss)
-
+    iter_list.append(i)
     if i % iter_per_epoch == 0:
         train_acc = network.accuracy(x_train, t_train)
         test_acc = network.accuracy(x_test, t_test)
         train_acc_list.append(train_acc)
         test_acc_list.append(test_acc)
-        print("[%d] Accuracy Train : %.4f, Test : %.4f " % (i, train_acc, test_acc))
+        # print("[%d] Accuracy Train : %.4f, Test : %.4f " % (i, train_acc, test_acc))
 
-    # print("[%d/%d] Train : %.4f Test : %.4f" % (i, iters_num, train_acc, test_acc))
+    print("[%d/%d] Train : %.4f Test : %.4f" % (i, iters_num, train_acc, test_acc))
 
+# print(len(train_loss_list))
+# print(len(iter_list))
 
+plt.scatter(iter_list, train_loss_list, s=1)
+plt.show()
