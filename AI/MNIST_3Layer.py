@@ -40,6 +40,19 @@ def cross_entropy_error(y, t):
     delta = 1e-7
     return -np.sum(t * np.log(y + delta))
 
+class Sigmoid:
+    def __init__(self):
+        self.out = None
+
+    def forward(self, x):
+        out = 1 / (1 + np.exp(-x))
+        self.out = out
+        return out
+
+    def backward(self, dout):
+        dx = dout * (1.0 - self.out) * self.out
+        return dx
+
 class Relu:
     def __init__(self):
         self.mask = None
@@ -106,8 +119,10 @@ class ThreeLayerNet:
         self.layers = OrderedDict()     # Ordered Dictionary Object
         self.layers['Affine1'] = Affine(self.params['W1'], self.params['b1'])
         self.layers['Relu1'] = Relu()
+        # self.layers['Sigmoid1'] = Sigmoid()
         self.layers['Affine2'] = Affine(self.params['W2'], self.params['b2'])
         self.layers['Relu2'] = Relu()
+        # self.layers['Sigmoid2'] = Sigmoid()
         self.layers['Affine3'] = Affine(self.params['W3'], self.params['b3'])
         self.lastLayer = SoftmaxWithLoss()
 
@@ -181,26 +196,27 @@ for i in range(iters_num):
     batch_mask = np.random.choice(train_size, batch_size)
     x_batch = x_train[batch_mask]
     t_batch = t_train[batch_mask]
-
+    # Back Propagation
     grad = network.gradient(x_batch, t_batch)
 
+    # Update
     for key in ('W1', 'b1', 'W2', 'b2', 'W3', 'b3'):
         network.params[key] -= learning_rate * grad[key]
 
     loss = network.loss(x_batch, t_batch)
     train_loss_list.append(loss)
     iter_list.append(i)
+
     if i % iter_per_epoch == 0:
         train_acc = network.accuracy(x_train, t_train)
+        train_loss = network.loss(x_train, t_train)
         test_acc = network.accuracy(x_test, t_test)
         train_acc_list.append(train_acc)
         test_acc_list.append(test_acc)
-        # print("[%d] Accuracy Train : %.4f, Test : %.4f " % (i, train_acc, test_acc))
-
-    print("[%d/%d] Train : %.4f Test : %.4f" % (i, iters_num, train_acc, test_acc))
-
-# print(len(train_loss_list))
-# print(len(iter_list))
+        print("[%5d] Accuracy Train : %.4f, Test : %.4f " % (i, train_acc, test_acc))
+    # print("[%d/%d] Train : %.4f Test : %.4f" % (i, iters_num, train_acc, test_acc))
 
 plt.scatter(iter_list, train_loss_list, s=1)
+# plt.plot(iter_list, train_loss_list, color='b')
 plt.show()
+
