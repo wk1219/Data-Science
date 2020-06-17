@@ -53,6 +53,21 @@ class Sigmoid:
         dx = dout * (1.0 - self.out) * self.out
         return dx
 
+class Dropout:
+    def __init__(self, dropout_ratio=0.5):
+        self.dropout_ratio = dropout_ratio
+        self.mask =None
+
+    def forward(self, x, train_flg=True):
+        if train_flg:
+            self.mask = np.random.rand(*x.shape) > self.dropout_ratio
+            return x * self.mask
+        else:
+            return x * (1.0 - self.dropout_ratio)
+
+    def backward(self, dout):
+        return dout * self.mask
+
 class Relu:
     def __init__(self):
         self.mask = None
@@ -107,7 +122,8 @@ class SoftmaxWithLoss:
 
 class ThreeLayerNet:
 
-    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, weight_init_std=0.01):
+    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, weight_init_std=0.01, use_dropout=False, dropout_ration=0.5):
+        self.use_dropout = use_dropout
         self.params = {}
         self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden1_size)
         self.params['b1'] = np.zeros(hidden1_size)
@@ -124,6 +140,8 @@ class ThreeLayerNet:
         self.layers['Relu2'] = Relu()
         # self.layers['Sigmoid2'] = Sigmoid()
         self.layers['Affine3'] = Affine(self.params['W3'], self.params['b3'])
+        if self.use_dropout:
+            self.layers['Dropout'] = Dropout(dropout_ration)
         self.lastLayer = SoftmaxWithLoss()
 
     def predict(self, x):
@@ -177,12 +195,17 @@ class ThreeLayerNet:
         return grads
 
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
-network = ThreeLayerNet(input_size=784, hidden1_size=50, hidden2_size=100, output_size=10)
+# x_train = x_train[:300]
+# t_train = t_train[:300]
+use_dropout = True
+dropout_ratio = 0.2
+network = ThreeLayerNet(input_size=784, hidden1_size=50, hidden2_size=100, output_size=10, use_dropout=use_dropout, dropout_ration=dropout_ratio)
 
 # Hyper Parameter
 iters_num = 10000
 train_size = x_train.shape[0]
 batch_size = 100
+# learning_rate = 0.5
 learning_rate = 0.1
 
 train_loss_list = []
@@ -216,6 +239,16 @@ for i in range(iters_num):
         print("[%5d] Accuracy Train : %.4f, Test : %.4f " % (i, train_acc, test_acc))
     # print("[%d/%d] Train : %.4f Test : %.4f" % (i, iters_num, train_acc, test_acc))
 
+
+markers = {'train': 'o', 'test': 's'}
+x = np.arange(len(train_acc_list))
+plt.plot(x, train_acc_list, label='Train Accuracy')
+plt.plot(x, test_acc_list, label='Test Accuracy', linestyle='--')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.ylim(0, 1.0)
+plt.legend(loc='lower right')
+plt.show()
 plt.scatter(iter_list, train_loss_list, s=1)
 # plt.plot(iter_list, train_loss_list, color='b')
 plt.show()
